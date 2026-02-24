@@ -40,7 +40,6 @@ export function RouteInfo({ routeDetails, isPlanning, zones, routingError }) {
       if (typeof window === 'undefined' || !window.speechSynthesis) return;
       const availableVoices = window.speechSynthesis.getVoices();
       if (availableVoices.length > 0) {
-        // Find a standard English voice
         const voice = availableVoices.find((v) => v.lang.startsWith('en')) || availableVoices[0];
         setEnglishVoice(voice);
       }
@@ -173,7 +172,7 @@ export function RouteInfo({ routeDetails, isPlanning, zones, routingError }) {
           <div>
             <CardTitle>Route Details</CardTitle>
             <CardDescription>
-              Here is the suggested path based on current crowd levels.
+              Suggested path based on current crowd levels.
             </CardDescription>
           </div>
           <Button
@@ -221,7 +220,7 @@ export function RouteInfo({ routeDetails, isPlanning, zones, routingError }) {
                   Congested Route (Avoided)
                 </p>
                 <p className="text-xs text-muted-foreground mb-2">
-                  The most direct path was avoided due to high congestion.
+                  Avoided high congestion for a safer experience.
                 </p>
                 <RoutePath path={routeDetails.alternativeRoute} />
               </div>

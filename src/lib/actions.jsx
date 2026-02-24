@@ -9,9 +9,6 @@ const DENSITY_COST = {
   'over-crowded': 100
 };
 
-/**
- * Calculates the bounding box for a zone to determine adjacency.
- */
 function getBoundingBox(zone) {
   if (!zone.coordinates || zone.coordinates.length === 0) return { minLat: 0, maxLat: 0, minLng: 0, maxLng: 0 };
   const lats = zone.coordinates.map((c) => c.lat);
@@ -24,13 +21,10 @@ function getBoundingBox(zone) {
   };
 }
 
-/**
- * Checks if two zones are physically adjacent based on bounding box overlap.
- */
 function areZonesAdjacent(zone1, zone2) {
   const box1 = getBoundingBox(zone1);
   const box2 = getBoundingBox(zone2);
-  const epsilon = 0.0002; // Roughly 20 meters
+  const epsilon = 0.0002;
 
   const latOverlap = box1.maxLat >= box2.minLat - epsilon && box1.minLat <= box2.maxLat + epsilon;
   const lngOverlap = box1.maxLng >= box2.minLng - epsilon && box1.minLng <= box2.maxLng + epsilon;
@@ -38,9 +32,6 @@ function areZonesAdjacent(zone1, zone2) {
   return latOverlap && lngOverlap;
 }
 
-/**
- * Handles user login logic (Server-side validation if needed).
- */
 export async function loginUserAction(data) {
   const { role, username, email } = data;
   const loginTimestamp = new Date().toISOString();
@@ -54,16 +45,10 @@ export async function loginUserAction(data) {
   return { success: true, role, loginTimestamp };
 }
 
-/**
- * Logs out the user and redirects home.
- */
 export async function logoutUserAction() {
   redirect('/');
 }
 
-/**
- * Dijkstra's Algorithm implementation for route optimization.
- */
 export async function getRouteAction(sourceZone, destinationZone, zones) {
   if (!sourceZone || !destinationZone || !zones || zones.length === 0) {
     return { error: 'Source, destination, and zones are required.' };

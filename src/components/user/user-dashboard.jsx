@@ -82,7 +82,7 @@ export function UserDashboard({ userId }) {
   }, [zones, users]);
 
   const alertsQuery = useMemoFirebase(() => query(collection(db, 'alerts'), orderBy('timestamp', 'desc'), limit(5)), [db]);
-  const { data: alertsData = [] } = useCollection(alertsQuery);
+  const { data: alertsData } = useCollection(alertsQuery);
 
   const [routeDetails, setRouteDetails] = useState(null);
   const [routingError, setRoutingError] = useState(null);
@@ -92,9 +92,10 @@ export function UserDashboard({ userId }) {
   const [latestAlert, setLatestAlert] = useState(null);
 
   useEffect(() => {
-    if (alertsData.length > 0 && userProfile) {
+    if (alertsData && alertsData.length > 0 && userProfile) {
       const applicableAlert = alertsData[0];
       const lastSeen = localStorage.getItem(LAST_SEEN_ALERT_KEY);
+      
       const isTargetedAtUser = !applicableAlert.zoneId || applicableAlert.zoneId === userProfile.lastZoneId;
       const isSentDuringSession = applicableAlert.timestamp > sessionStartTime.current;
       const isNotAcknowledged = applicableAlert.timestamp !== lastSeen;

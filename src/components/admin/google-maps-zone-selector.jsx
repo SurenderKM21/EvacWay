@@ -45,40 +45,31 @@ export function GoogleMapsZoneSelector({
   });
   
   const [mapInstance, setMapInstance] = useState(null);
-  const lastFocusedRef = useRef('');
+  const initialFocusDone = useRef(false);
 
-  // Strict focus logic using LatLngBounds
   const focusOnZone = useCallback(() => {
     if (!mapInstance || !coordinates || coordinates.length === 0) return;
 
     const bounds = new window.google.maps.LatLngBounds();
     coordinates.forEach(coord => bounds.extend(coord));
     
-    // fitBounds is the most reliable way to ignore "center" and show the specific area
     mapInstance.fitBounds(bounds);
     
-    // Prevent excessive zoom for small areas
     const listener = window.google.maps.event.addListener(mapInstance, 'idle', () => {
       if (mapInstance.getZoom() > 20) mapInstance.setZoom(19);
       window.google.maps.event.removeListener(listener);
     });
   }, [mapInstance, coordinates]);
 
-  // Effect to handle initial load and snaps
   useEffect(() => {
-    if (mapInstance && coordinates && coordinates.length > 0) {
-      const currentHash = JSON.stringify(coordinates);
-      // Only snap if coordinates actually changed (prevents snapping back while dragging)
-      // or if this is the very first time the map loads with coordinates
-      if (lastFocusedRef.current === '') {
-        focusOnZone();
-        lastFocusedRef.current = currentHash;
-      }
+    if (mapInstance && coordinates && coordinates.length > 0 && !initialFocusDone.current) {
+      focusOnZone();
+      initialFocusDone.current = true;
     }
   }, [mapInstance, coordinates, focusOnZone]);
 
   const handleMapClick = (event) => {
-    if (coordinates.length < 10 && event.latLng) {
+    if (coordinates.length < 15 && event.latLng) {
       const newCoord = { lat: event.latLng.lat(), lng: event.latLng.lng() };
       onCoordinatesChange([...coordinates, newCoord]);
     }
@@ -94,7 +85,7 @@ export function GoogleMapsZoneSelector({
 
   const clearCoordinates = () => {
     onCoordinatesChange([]);
-    lastFocusedRef.current = '';
+    initialFocusDone.current = false;
   };
 
   if (loadError) {
@@ -104,7 +95,7 @@ export function GoogleMapsZoneSelector({
           <div className="flex flex-col items-center justify-center text-center space-y-4">
             <AlertTriangle className="h-12 w-12 text-destructive" />
             <h3 className="font-bold text-lg text-destructive">Maps Error</h3>
-            <p className="text-sm text-muted-foreground">Check API Key and Referer Restrictions.</p>
+            <p className="text-sm text-muted-foreground">Check API Key restrictions or authorize domain.</p>
           </div>
         </CardContent>
       </Card>
@@ -115,10 +106,7 @@ export function GoogleMapsZoneSelector({
     return <Skeleton className="h-[400px] w-full rounded-md" />;
   }
 
-  // Determine initial map center strictly: Zone first, then default
-  const initialCenter = coordinates.length > 0 
-    ? coordinates[0] 
-    : defaultCenter;
+  const initialCenter = coordinates.length > 0 ? coordinates[0] : defaultCenter;
 
   return (
     <div className="space-y-2">
@@ -187,7 +175,7 @@ export function GoogleMapsZoneSelector({
       </GoogleMap>
       
       <p className="text-xs text-muted-foreground italic bg-muted/50 p-2 rounded">
-        When editing, the map strictly focuses on the zone markers. Drag numbered markers to adjust.
+        Snap to zone enabled. Drag markers to adjust physical boundaries on the satellite view.
       </p>
     </div>
   );
