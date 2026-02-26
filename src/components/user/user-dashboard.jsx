@@ -104,7 +104,7 @@ export function UserDashboard({ userId }) {
   const [latestAlert, setLatestAlert] = useState(null);
 
   useEffect(() => {
-    // Fix: Added safety check for alertsData being null to prevent length crash
+    // Stability Fix: Safe check for alertsData being null/empty
     if (alertsData && alertsData.length > 0 && userProfile) {
       const applicableAlert = alertsData[0];
       const lastSeen = localStorage.getItem(LAST_SEEN_ALERT_KEY);

@@ -40,6 +40,7 @@ export function UserMonitor({ initialUsers, initialZones }) {
   const db = useFirestore();
   const [isPending, startTransition] = useTransition();
 
+  // Filter out the primary admin and self
   const users = initialUsers.filter((u) => u.role !== 'admin' && u.name !== 'John Doe');
   const loggedInUsers = users.filter((user) => user.status === 'online');
   const loggedOutUsers = users.filter((user) => user.status !== 'online');
@@ -81,7 +82,6 @@ export function UserMonitor({ initialUsers, initialZones }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[150px]">User ID</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Zone</TableHead>
               {showActions && <TableHead className="text-right">Actions</TableHead>}
@@ -91,8 +91,7 @@ export function UserMonitor({ initialUsers, initialZones }) {
             {users.length > 0 ? (
               users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium text-xs">{user.id}</TableCell>
-                  <TableCell>{user.name || user.id}</TableCell>
+                  <TableCell className="font-medium">{user.name || 'Anonymous User'}</TableCell>
                   <TableCell>
                     {user.lastZoneId
                       ? zoneMap.get(user.lastZoneId) ?? 'Unknown'
@@ -128,7 +127,7 @@ export function UserMonitor({ initialUsers, initialZones }) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={showActions ? 4 : 3}
+                  colSpan={showActions ? 3 : 2}
                   className="text-center text-muted-foreground h-24"
                 >
                   No users in this category.
