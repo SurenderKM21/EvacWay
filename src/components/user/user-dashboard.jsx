@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 function isPointInPolygon(lat, lng, polygon) {
+  if (!polygon || polygon.length < 3) return false;
   let isInside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i].lat, yi = polygon[i].lng;
@@ -73,7 +74,12 @@ export function UserDashboard({ userId }) {
 
   const enrichedZones = useMemo(() => {
     return zones.map(zone => {
-      const count = users.filter(u => u.lastZoneId === zone.id && u.status === 'online').length;
+      // Logic Fix: Only count online users with role 'user'
+      const count = users.filter(u => 
+        u.lastZoneId === zone.id && 
+        u.status === 'online' && 
+        u.role === 'user'
+      ).length;
       
       const isOverrideStale = zone.manualDensity && 
                               zone.manualDensityAtCount !== undefined && 
@@ -98,7 +104,7 @@ export function UserDashboard({ userId }) {
   const [latestAlert, setLatestAlert] = useState(null);
 
   useEffect(() => {
-    // Fixed: Added safety check for alertsData being null
+    // Fix: Added safety check for alertsData being null to prevent length crash
     if (alertsData && alertsData.length > 0 && userProfile) {
       const applicableAlert = alertsData[0];
       const lastSeen = localStorage.getItem(LAST_SEEN_ALERT_KEY);

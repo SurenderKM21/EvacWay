@@ -51,7 +51,7 @@ export function GoogleMapsZoneSelector({
     
     mapInstance.fitBounds(bounds);
     
-    // Prevent excessive zooming if zone is a single point or small
+    // Prevent excessive zooming if zone is small
     const listener = window.google.maps.event.addListener(mapInstance, 'idle', () => {
       if (mapInstance.getZoom() > 20) mapInstance.setZoom(19);
       window.google.maps.event.removeListener(listener);
@@ -92,7 +92,7 @@ export function GoogleMapsZoneSelector({
           <div className="flex flex-col items-center justify-center text-center space-y-4">
             <AlertTriangle className="h-12 w-12 text-destructive" />
             <h3 className="font-bold text-lg text-destructive">Maps Error</h3>
-            <p className="text-sm text-muted-foreground">Check API Key restrictions or authorize domain.</p>
+            <p className="text-sm text-muted-foreground">Domain authorization might be required. Referer: {typeof window !== 'undefined' ? window.location.origin : 'unknown'}</p>
           </div>
         </CardContent>
       </Card>
@@ -172,7 +172,7 @@ export function GoogleMapsZoneSelector({
       </GoogleMap>
       
       <p className="text-xs text-muted-foreground italic bg-muted/50 p-2 rounded">
-        Snap to zone enabled. Drag markers to adjust physical boundaries on the satellite view.
+        Drag markers to adjust boundaries. The map focuses strictly on defined points to ignore your physical location.
       </p>
     </div>
   );
