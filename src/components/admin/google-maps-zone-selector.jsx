@@ -42,6 +42,7 @@ export function GoogleMapsZoneSelector({
   
   const [mapInstance, setMapInstance] = useState(null);
   const initialFocusDone = useRef(false);
+  const initialCoordsAtMount = useRef(coordinates);
 
   const focusOnZone = useCallback(() => {
     if (!mapInstance || !coordinates || coordinates.length === 0) return;
@@ -68,22 +69,28 @@ export function GoogleMapsZoneSelector({
           };
           mapInstance.panTo(pos);
           mapInstance.setZoom(18);
-        }
+        },
+        (err) => console.warn('Geolocation error:', err),
+        { enableHighAccuracy: true, timeout: 5000 }
       );
     }
   }, [mapInstance]);
 
   useEffect(() => {
-    // Aggressive focus: If editing (coords > 0), fitBounds. If adding (coords == 0), geolocation.
+    // Determine initial focus strategy ONLY once when map loads
     if (mapInstance && !initialFocusDone.current) {
-      if (coordinates && coordinates.length > 0) {
-        focusOnZone();
+      if (initialCoordsAtMount.current && initialCoordsAtMount.current.length > 0) {
+        // EDIT MODE: Focus on existing markers, ignore GPS
+        const bounds = new window.google.maps.LatLngBounds();
+        initialCoordsAtMount.current.forEach(coord => bounds.extend(coord));
+        mapInstance.fitBounds(bounds);
       } else {
+        // ADD MODE: Point to current location
         centerOnCurrentLocation();
       }
       initialFocusDone.current = true;
     }
-  }, [mapInstance, coordinates, focusOnZone, centerOnCurrentLocation]);
+  }, [mapInstance, centerOnCurrentLocation]);
 
   const handleMapClick = (event) => {
     if (coordinates.length < 15 && event.latLng) {
@@ -102,7 +109,6 @@ export function GoogleMapsZoneSelector({
 
   const clearCoordinates = () => {
     onCoordinatesChange([]);
-    initialFocusDone.current = false;
   };
 
   if (loadError) {
@@ -199,7 +205,7 @@ export function GoogleMapsZoneSelector({
       </GoogleMap>
       
       <p className="text-xs text-muted-foreground italic bg-muted/50 p-2 rounded">
-        Red markers show existing boundaries. Drag points to refine or click empty space to add.
+        Red markers show boundary points. Drag existing points to refine, or click empty space to add new ones.
       </p>
     </div>
   );
