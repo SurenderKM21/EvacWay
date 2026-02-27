@@ -146,7 +146,7 @@ export function LoginForm() {
                   id="email" 
                   name="email" 
                   type="email" 
-                  placeholder="admin@evacai.com" 
+                  placeholder="Enter email" 
                   required 
                   disabled={isPending} 
                 />
