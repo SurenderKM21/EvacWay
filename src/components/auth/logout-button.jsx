@@ -6,7 +6,6 @@ import { LogOut, Loader } from 'lucide-react';
 import { logoutUserAction } from '@/lib/actions';
 import { useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
 import { initializeFirebase } from '@/firebase';
 
 export function LogoutButton() {
@@ -20,24 +19,26 @@ export function LogoutButton() {
        
        if (profileId) {
           try {
-            // Mark the specific session profile as offline
+            // 1. Explicitly mark the profile as offline in Firestore
             const userRef = doc(db, 'users', profileId);
-            await updateDoc(userRef, { status: 'offline' });
+            await updateDoc(userRef, { 
+              status: 'offline',
+              lastSeen: new Date().toISOString() 
+            });
+            
+            // 2. Clear tab-specific session identity
+            sessionStorage.removeItem('evacai_profile_id');
+            
+            // 3. Perform server-side cleanup and redirect
+            await logoutUserAction();
           } catch (e) {
-            console.error('Failed to mark user as offline:', e);
+            console.error('Logout error:', e);
+            // Fallback: clear session and redirect even if Firestore update fails
+            sessionStorage.removeItem('evacai_profile_id');
+            await logoutUserAction();
           }
-       }
-
-       try {
-         // Clear session isolation data
-         sessionStorage.removeItem('evacai_profile_id');
-         
-         const { auth } = initializeFirebase();
-         // Only sign out of Firebase if no other tabs might be using it
-         // For a prototype, we'll keep it simple and just redirect
-         await logoutUserAction();
-       } catch (e) {
-         console.error('Logout error:', e);
+       } else {
+          await logoutUserAction();
        }
     });
   };

@@ -74,7 +74,6 @@ export function UserDashboard({ userId }) {
 
   const enrichedZones = useMemo(() => {
     return zones.map(zone => {
-      // Count ONLY online users with 'user' role to ensure accurate occupancy visualization
       const count = users.filter(u => 
         u.lastZoneId === zone.id && 
         u.status === 'online' && 
@@ -104,7 +103,6 @@ export function UserDashboard({ userId }) {
   const [latestAlert, setLatestAlert] = useState(null);
 
   useEffect(() => {
-    // Stability fix: Added safe null-check for alertsData to prevent TypeError crash
     if (alertsData && alertsData.length > 0 && userProfile) {
       const applicableAlert = alertsData[0];
       const lastSeen = localStorage.getItem(LAST_SEEN_ALERT_KEY);
@@ -126,6 +124,10 @@ export function UserDashboard({ userId }) {
   };
 
   const updateLocation = useCallback(async (lat, lng) => {
+    // SECURITY: If the tab session ID is gone, we are logging out. Stop updates.
+    const activeSessionId = sessionStorage.getItem('evacai_profile_id');
+    if (!activeSessionId || activeSessionId !== userId) return;
+
     setCurrentUserLocation({ lat, lng });
     
     let identifiedZoneId = null;
@@ -153,7 +155,7 @@ export function UserDashboard({ userId }) {
         }));
       });
     }
-  }, [userRef]);
+  }, [userRef, userId]);
 
   useEffect(() => {
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
