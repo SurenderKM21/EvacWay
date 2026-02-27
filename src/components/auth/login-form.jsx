@@ -61,6 +61,9 @@ export function LoginForm() {
              lastSeen: new Date().toISOString()
            }, { merge: true });
 
+           // Store the profileId in sessionStorage (unique per tab)
+           sessionStorage.setItem('evacai_profile_id', profileId);
+
          } else {
            userCredential = await signInAnonymously(auth);
            // Generate a unique ID for this specific session/tab to prevent collision
