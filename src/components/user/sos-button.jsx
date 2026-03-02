@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Siren } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -25,13 +25,22 @@ export function SOSButton({ userId, initialSOSState }) {
   const { toast } = useToast();
   const db = useFirestore();
 
+  // Synchronize internal state with the persistent profile data from Firestore
+  // This ensures that if an Admin resolves the SOS, the user's UI reflects it immediately.
+  useEffect(() => {
+    setIsSOS(initialSOSState);
+  }, [initialSOSState]);
+
   const handleToggleSOS = () => {
     const newSOSState = !isSOS;
     const userRef = doc(db, 'users', userId);
     
+    // Update Firestore document
     updateDocumentNonBlocking(userRef, { sos: newSOSState });
     
+    // Optimistic local update for immediate feedback
     setIsSOS(newSOSState);
+    
     toast({
       title: newSOSState ? 'SOS Signal Sent' : 'SOS Signal Cancelled',
       description: newSOSState
