@@ -58,5 +58,12 @@ To run this project, ensure the following are configured in your `.env`:
 ---
 Built with safety in mind for the next generation of event management.
 
-![](docs/images/Picture1.png)
-![](docs/images/Picture2.png)
+![](docs/Picture1.png)
+![](docs/Picture2.png)
+![](docs/Picture3.png)
+![](docs/Picture4.png)
+![](docs/Picture5.png)
+![](docs/Picture6.png)
+![](docs/Picture7.png)
+![](docs/Picture8.png)
+![](docs/Screenshot 2026-03-03 144444.png)
