@@ -12,7 +12,7 @@ export default function LoginPage() {
           <Link href="/" className="flex items-center gap-2">
             <Shield className="w-12 h-12 text-primary" />
             <h1 className="text-5xl font-headline font-bold text-primary">
-              EvacAI
+              EvacWay
             </h1>
           </Link>
         </div>

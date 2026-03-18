@@ -21,7 +21,7 @@ function UserAuthGuard() {
         router.push('/login');
       } else {
         // Try to get the tab-specific session ID
-        const storedId = sessionStorage.getItem('evacai_profile_id');
+        const storedId = sessionStorage.getItem('evacway_profile_id');
         setProfileId(storedId || user.uid);
         setIsReady(true);
       }

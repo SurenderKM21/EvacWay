@@ -21,7 +21,7 @@ function AdminAuthGuard() {
       if (!user) {
         router.push('/login');
       } else {
-        const storedId = sessionStorage.getItem('evacai_profile_id');
+        const storedId = sessionStorage.getItem('evacway_profile_id');
         // Fallback to user.uid if no session ID exists (legacy or direct link)
         setProfileId(storedId || user.uid);
         setIsReady(true);

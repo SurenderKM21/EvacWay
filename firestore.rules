@@ -3,27 +3,63 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * EVACAI SECURITY RULES - PROTOTYPING MODE
+     * EVACWAY SECURITY RULES - PRODUCTION READY
      * 
-     * Force-triggering deployment with explicit permissions for 'list' and 'get' operations.
-     * This allows all reads and writes to unblock development across all collections.
+     * Implements Role-Based Access Control (RBAC).
+     * - Admins: Full access to zones, alerts, and all user profiles.
+     * - Users: Can read zones/alerts and manage their own specific profile.
      */
 
+    // Helper: Check if user is an admin
+    // Admins use their persistent Auth UID as the document ID in /users
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper: Check if user owns the document
+    // Handles both persistent UIDs and session-based 'authUid' fields
+    function isOwner(userId) {
+      return request.auth != null && (
+        request.auth.uid == userId || 
+        (resource != null && resource.data.authUid == request.auth.uid)
+      );
+    }
+
     match /users/{userId} {
-      allow read, write: if true;
+      // Admins see all, users see themselves
+      allow read: if request.auth != null && (isAdmin() || isOwner(userId));
+      
+      // Allow profile creation during login
+      allow create: if request.auth != null && (
+        request.resource.data.authUid == request.auth.uid || 
+        request.auth.uid == userId
+      );
+      
+      // Allow updates to own profile (location, SOS status)
+      allow update: if request.auth != null && (isAdmin() || isOwner(userId));
+      
+      // Only admins can delete profiles
+      allow delete: if isAdmin();
     }
 
     match /zones/{zoneId} {
-      allow read, write: if true;
+      // Zones are public for viewing the map
+      allow read: if true;
+      // Only admins can modify boundaries or override density
+      allow write: if isAdmin();
     }
 
     match /alerts/{alertId} {
-      allow read, write: if true;
+      // Alerts are public broadcasts for safety
+      allow read: if true;
+      // Only admins can send or clear alerts
+      allow write: if isAdmin();
     }
 
-    // Support for any other collections created during prototyping
+    // Default deny for unauthenticated or non-admin access to other paths
     match /{document=**} {
-      allow get, list, create, update, delete: if true;
+      allow read, write: if isAdmin();
     }
   }
 }

@@ -9,7 +9,7 @@ export default function Home() {
         <div className="flex justify-center items-center gap-4 mb-4">
           <Shield className="w-16 h-16 text-primary" />
           <h1 className="text-6xl font-headline font-bold text-primary">
-            EvacAI
+            EvacWay
           </h1>
         </div>
         <p className="text-xl text-muted-foreground mb-12">

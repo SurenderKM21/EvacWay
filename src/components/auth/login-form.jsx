@@ -62,7 +62,7 @@ export function LoginForm() {
            }, { merge: true });
 
            // Store the profileId in sessionStorage (unique per tab)
-           sessionStorage.setItem('evacai_profile_id', profileId);
+           sessionStorage.setItem('evacway_profile_id', profileId);
 
          } else {
            userCredential = await signInAnonymously(auth);
@@ -81,7 +81,7 @@ export function LoginForm() {
            }, { merge: true });
            
            // Store the profileId in sessionStorage (unique per tab)
-           sessionStorage.setItem('evacai_profile_id', profileId);
+           sessionStorage.setItem('evacway_profile_id', profileId);
          }
 
          const result = await loginUserAction({ email, username, role });
@@ -89,7 +89,7 @@ export function LoginForm() {
          if (result.success) {
             toast({
               title: 'Login Successful',
-              description: role === 'admin' ? 'Admin session verified.' : 'Welcome to EvacAI!',
+              description: role === 'admin' ? 'Admin session verified.' : 'Welcome to EvacWay!',
             });
             
             router.push(role === 'user' ? '/user' : '/admin');

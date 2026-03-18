@@ -13,7 +13,7 @@ export function Header({ section }) {
         <div className="mr-4 flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            <span className="font-bold font-headline text-lg">EvacAI</span>
+            <span className="font-bold font-headline text-lg">EvacWay</span>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">

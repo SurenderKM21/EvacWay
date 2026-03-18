@@ -15,7 +15,7 @@ export function LogoutButton() {
 
   const handleLogout = () => {
     startTransition(async () => {
-       const profileId = sessionStorage.getItem('evacai_profile_id') || user?.uid;
+       const profileId = sessionStorage.getItem('evacway_profile_id') || user?.uid;
        
        if (profileId) {
           try {
@@ -27,14 +27,14 @@ export function LogoutButton() {
             });
             
             // 2. Clear tab-specific session identity
-            sessionStorage.removeItem('evacai_profile_id');
+            sessionStorage.removeItem('evacway_profile_id');
             
             // 3. Perform server-side cleanup and redirect
             await logoutUserAction();
           } catch (e) {
             console.error('Logout error:', e);
             // Fallback: clear session and redirect even if Firestore update fails
-            sessionStorage.removeItem('evacai_profile_id');
+            sessionStorage.removeItem('evacway_profile_id');
             await logoutUserAction();
           }
        } else {

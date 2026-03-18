@@ -50,7 +50,7 @@ function calculateDensity(count, capacity) {
   return 'free';
 }
 
-const LAST_SEEN_ALERT_KEY = 'evacai-last-seen-alert-timestamp';
+const LAST_SEEN_ALERT_KEY = 'evacway-last-seen-alert-timestamp';
 
 export function UserDashboard({ userId }) {
   const db = useFirestore();
@@ -125,7 +125,7 @@ export function UserDashboard({ userId }) {
 
   const updateLocation = useCallback(async (lat, lng) => {
     // SECURITY: If the tab session ID is gone, we are logging out. Stop updates.
-    const activeSessionId = sessionStorage.getItem('evacai_profile_id');
+    const activeSessionId = sessionStorage.getItem('evacway_profile_id');
     if (!activeSessionId || activeSessionId !== userId) return;
 
     setCurrentUserLocation({ lat, lng });
